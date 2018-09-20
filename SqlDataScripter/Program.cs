@@ -53,6 +53,10 @@ namespace SqlDataScripter
             scripter.Options.IncludeHeaders = options.IncludeHeaders;
             scripter.Options.ScriptSchema = options.ScriptSchema;
             scripter.Options.ScriptData = options.ScriptData;
+            //scripter.Options.ScriptBatchTerminator = true;
+            //scripter.Options.NoCommandTerminator = false;
+            //scripter.Options.FileName = "test.sql"; 
+            //scripter.Options.ToFileOnly = true;
             if (String.IsNullOrEmpty(options.OutputFileName))
             {
                 ScriptTables(Console.Out, scripter, GetTables(database, options.Tables), quiet);
