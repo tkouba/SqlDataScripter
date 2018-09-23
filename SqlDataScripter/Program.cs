@@ -47,44 +47,38 @@ namespace SqlDataScripter
             }
 
             Database database = server.Databases[options.Database];
+            if (database == null)
+                throw new Exception(String.Format("Cannot find database {0}.", options.Database));
 
-            var scripter = new Scripter(server);
+            var scripter = new TableScripter(server, quiet ? null : Console.Out);
             scripter.Options.IncludeIfNotExists = options.IncludeIfNotExists;
             scripter.Options.IncludeHeaders = options.IncludeHeaders;
             scripter.Options.ScriptSchema = options.ScriptSchema;
             scripter.Options.ScriptData = options.ScriptData;
-            if (String.IsNullOrEmpty(options.OutputFileName))
+            scripter.Options.ScriptBatchTerminator = !options.NoBatchTerminator;
+            scripter.Options.NoCommandTerminator = options.NoBatchTerminator;
+            if (!String.IsNullOrEmpty(options.OutputFileName))
             {
-                ScriptTables(Console.Out, scripter, GetTables(database, options.Tables), quiet);
+                scripter.Options.FileName = options.OutputFileName;
+                scripter.Options.ToFileOnly = true;
+                scripter.Options.AppendToFile = options.AppendToFile;
             }
-            else
+            scripter.Options.Indexes = options.Indexes;
+            if (!String.IsNullOrEmpty(options.Encoding))
             {
-                using (StreamWriter file = new StreamWriter(options.OutputFileName))
-                {
-                    ScriptTables(file, scripter, GetTables(database, options.Tables), quiet);
-                }
+                scripter.Options.Encoding = Encoding.GetEncoding(options.Encoding);                                
+            }
+
+            var tables = GetTables(database, options.Tables).ToArray();
+            foreach (string s in scripter.ScriptTables(tables))
+            {
+                Console.WriteLine(s);
             }
 
             if (!quiet)
                 Console.WriteLine("Scripting done.");
 
             return 0;
-        }
-
-        private static void ScriptTables(TextWriter output, Scripter scripter, IEnumerable<Table> tables, bool quiet)
-        {
-            foreach (var table in tables)
-            {
-                if (table != null && !table.IsSystemObject)
-                {
-                    if (!quiet)
-                        Console.WriteLine("Scripting table {0}", table.Name);
-                    foreach (string s in scripter.EnumScript(new Urn[] { table.Urn }))
-                    {
-                        output.WriteLine(s);
-                    }
-                }
-            }
         }
 
         static IEnumerable<Table> GetTables(Database database, IEnumerable<string> names)
