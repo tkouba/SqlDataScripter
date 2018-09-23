@@ -11,7 +11,13 @@
   - [x] Encoding
   - [ ] NoSchemaQualify - Object names in script are not schema qualified.
   - [ ] Triggers
-  - [ ] IncludeScriptingParametersHeader - A header containing information about the scripting parameters is included.   
+  - [ ] IncludeScriptingParametersHeader - A header containing information about the scripting parameters is included.
+ - [ ] Move to netstandard (core, net47)
+ - [ ] Localization 
+ - [ ] Command line examples in help
+ - [ ] Create wiki page
+   - [ ] Move road map to wiki
+ - [ ] Any others ?
 
 # Change log
 
